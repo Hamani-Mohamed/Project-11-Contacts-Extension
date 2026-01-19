@@ -1,0 +1,113 @@
+using System;
+using System.Data;
+using ContactsDataAccessLayer;
+
+namespace ContactsBusinessLayer
+{
+    public class clsContact
+    {
+        public int ID { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
+        public string Address { get; set; }
+        public DateTime DateOfBirth { get; set; }
+        public int CountryID { get; set; }
+        public string ImagePath { get; set; }
+        enum enMode { AddNew, UpdateMode };
+        enMode Mode = enMode.UpdateMode;
+
+        public clsContact()
+        {
+            this.FirstName = "";
+            this.LastName = "";
+            this.Email = "";
+            this.Phone = "";
+            this.Address = "";
+            this.DateOfBirth = DateTime.Now;
+            this.CountryID = -1;
+            this.ImagePath = "";
+            this.Mode = enMode.AddNew;
+        }
+
+        private clsContact(int ID, string FirstName, string LastName, string Phone, string Email, string Address,
+            DateTime DateOfBirth, int CountryID, string ImagePath)
+        {
+            this.ID = ID;
+            this.FirstName = FirstName;
+            this.LastName = LastName;
+            this.Email = Email;
+            this.Phone = Phone;
+            this.Address = Address;
+            this.DateOfBirth = DateOfBirth;
+            this.CountryID = CountryID;
+            this.ImagePath = ImagePath;
+            Mode = enMode.UpdateMode;
+        }
+
+        public static clsContact Find(int ID)
+        {
+            string FirstName = "", LastName = "", Phone = "", Email = "", Address = "", ImagePath = "";
+            int CountryID = -1;
+            DateTime date = DateTime.Now;
+
+            if (clsContactDataAccess.GetContactInfoByID(ID, ref FirstName, ref LastName, ref Phone, ref Email,
+                ref Address, ref date, ref CountryID, ref ImagePath))
+            {
+                return new clsContact(ID, FirstName, LastName, Phone, Email, Address, date, CountryID, ImagePath);
+            }
+            else
+                return null;
+        }
+
+        private bool _AddNewContact()
+        {
+            this.ID = clsContactDataAccess.AddNewContact(this.FirstName, this.LastName, this.Email, this.Phone,
+                this.Address, this.DateOfBirth, this.CountryID, this.ImagePath);
+
+            return (this.ID != -1);
+        }
+
+        private bool _UpdateContact()
+        {
+            return (clsContactDataAccess.UpdateContact(this.ID, this.FirstName, this.LastName, this.Email, this.Phone,
+                this.Address, this.DateOfBirth, this.CountryID, this.ImagePath));
+        }
+
+        public static bool DeleteContact(int ID)
+        {
+            return clsContactDataAccess._DeleteContact(ID);
+        }
+
+        public static DataTable _GetAllContacts()
+        {
+            return clsContactDataAccess.GetAllContacts();
+        }
+
+        public static bool _DoesContactExist(int ID)
+        {
+            return clsContactDataAccess.DoesContactExist(ID);
+        }
+
+        public bool Save()
+        {
+            switch (Mode)
+            {
+                case enMode.AddNew:
+                    if (_AddNewContact())
+                    {
+                        Mode = enMode.UpdateMode;
+                        return true;
+                    }
+                    else
+                        return false;
+                case enMode.UpdateMode:
+                    {
+                        return _UpdateContact();
+                    }
+            }
+            return false;
+        }
+    }
+}
