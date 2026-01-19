@@ -2,6 +2,7 @@
 ## 📖 About the Project
 A C# Contacts Management system that demonstrates a clean 3-tier architecture using ADO.NET and SQL Server.
 The project supports full CRUD operations for managing contacts and is designed with a clear separation between Business Logic and Data Access layers.
+This project is part of the Abu-Hadhoud Platform training track with Dr. Muhammed Abu Hadhoud.
 This project is an extension to : https://github.com/Hamani-Mohamed/Project-10-Learning-3-Tier-Architechture
 
 ## 📌 Features
